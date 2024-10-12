@@ -142,3 +142,20 @@ def calculate_stereo_energy(left_snake, right_snake, w_stereo):
     """
     stereo_energy = w_stereo * (left_snake - right_snake)
     return stereo_energy
+
+def calculate_total_energy(snake, internal_energy_matrix, external_energy, motion_energy=0, stereo_energy=0):
+    """
+    Calculate the total energy of the snake.
+    """
+    # Internal energy term
+    internal_energy = np.dot(snake.T, np.dot(internal_energy_matrix, snake))
+    # External energy term
+    external_energy_at_snake = map_coordinates(external_energy, [snake[:, 0], snake[:, 1]], order=1, mode='reflect')
+    external_energy_term = np.sum(external_energy_at_snake)
+    # Motion energy term
+    total_motion_energy = np.sum(motion_energy)
+    # Stereo energy term
+    total_stereo_energy = np.sum(stereo_energy)
+    # Total energy
+    total_energy = internal_energy + external_energy_term + total_motion_energy + total_stereo_energy
+    return total_energy
